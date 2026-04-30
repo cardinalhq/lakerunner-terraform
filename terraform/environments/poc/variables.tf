@@ -116,6 +116,12 @@ variable "postgresql_database_name" {
   default     = "lakerunner"
 }
 
+variable "postgresql_configdb_name" {
+  description = "PostgreSQL configdb database name for Lakerunner"
+  type        = string
+  default     = "config"
+}
+
 variable "postgresql_user" {
   description = "PostgreSQL username for Lakerunner"
   type        = string
@@ -132,7 +138,7 @@ variable "postgresql_password" {
 variable "postgresql_machine_type" {
   description = "PostgreSQL machine type"
   type        = string
-  default     = "db-f1-micro"
+  default     = "db-custom-1-3840"
 }
 
 variable "postgresql_disk_size_gb" {

@@ -144,6 +144,10 @@ kubectl get nodes
 ## Upgrading
 Your configuration is safe during upgrades - see [UPGRADE.md](../../../UPGRADE.md) for details.
 
+## Out of Scope
+Conductor/maestro requires its own PostgreSQL database (`maestro` DB and user, see `charts/maestro/values.yaml`). This POC terraform does not provision it.
+Operators wanting to run conductor alongside lakerunner must create that database manually on the same Cloud SQL instance.
+
 ## Cleanup
 
 To remove all resources:

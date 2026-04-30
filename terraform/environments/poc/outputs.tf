@@ -14,6 +14,11 @@ output "object_notifications_topic" {
   value       = google_pubsub_topic.object_notifications.name
 }
 
+output "pubsub_subscription_id" {
+  description = "Pub/Sub subscription for object notifications"
+  value       = google_pubsub_subscription.lakerunner_notifications.name
+}
+
 
 output "project_id" {
   description = "GCP Project ID used for this POC"
@@ -80,7 +85,7 @@ output "postgresql_database_name" {
 
 output "postgresql_configdb_name" {
   description = "PostgreSQL configdb name"
-  value       = "configdb"
+  value       = var.postgresql_configdb_name
 }
 
 output "postgresql_user" {
@@ -182,12 +187,13 @@ output "deployment_summary" {
     Storage:
       Lakerunner Bucket: ${google_storage_bucket.lakerunner.name}
       Notifications Topic: ${google_pubsub_topic.object_notifications.name}
+      Notifications Subscription: ${google_pubsub_subscription.lakerunner_notifications.name}
       S3 Compatible Access:
         Endpoint: https://storage.googleapis.com
         Access Key: ${google_storage_hmac_key.lakerunner_s3_key.access_id}
         Secret Key: [SENSITIVE - use 'terraform output -raw s3_secret_key' to view]
         Region: auto
-      ${var.create_postgresql ? "Database:\n      PostgreSQL Instance: ${google_sql_database_instance.lakerunner_postgresql[0].name}\n      Databases: ${var.postgresql_database_name}, configdb\n      User: ${var.postgresql_user}\n      Private IP: ${google_sql_database_instance.lakerunner_postgresql[0].private_ip_address}\n      Both lrdb and configdb ready for Lakerunner" : "Enable PostgreSQL with create_postgresql=true for database support"}
+      ${var.create_postgresql ? "Database:\n      PostgreSQL Instance: ${google_sql_database_instance.lakerunner_postgresql[0].name}\n      Databases: ${var.postgresql_database_name}, ${var.postgresql_configdb_name}\n      User: ${var.postgresql_user}\n      Private IP: ${google_sql_database_instance.lakerunner_postgresql[0].private_ip_address}\n      Both lrdb and configdb ready for Lakerunner" : "Enable PostgreSQL with create_postgresql=true for database support"}
 
     Network:
       VPC: ${google_compute_network.lakerunner_vpc.name} (dedicated)
