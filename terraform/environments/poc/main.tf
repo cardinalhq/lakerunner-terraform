@@ -314,10 +314,10 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.lakerunner_vpc.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
-  deletion_policy         = "ABANDON"  # Required to prevent interfering with other installations
+  deletion_policy         = "ABANDON" # Required to prevent interfering with other installations
 
   depends_on = [google_project_service.service_networking, google_project_service.sql_admin]
-  
+
   lifecycle {
     create_before_destroy = false
   }
@@ -378,7 +378,7 @@ resource "google_sql_database" "lakerunner_database" {
 # Create configdb database for Lakerunner configuration
 resource "google_sql_database" "lakerunner_configdb" {
   count    = var.create_postgresql ? 1 : 0
-  name     = "configdb"
+  name     = var.postgresql_configdb_name
   instance = google_sql_database_instance.lakerunner_postgresql[0].name
 }
 

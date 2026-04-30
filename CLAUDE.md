@@ -40,9 +40,10 @@ The structure is designed to support future AWS and Azure deployments, but curre
 - Safe upgrade path: customer configs never conflict with repo updates
 
 ### Network Configuration
-The POC environment uses existing VPC infrastructure:
-- **Default**: Uses GCP default VPC (simplest, works for most POCs)
-- **Enterprise**: Uses existing customer VPC by setting `vpc_name` and `subnet_name`
+The POC environment always provisions a dedicated VPC:
+- VPC + subnet `10.0.0.0/24` in the configured region
+- Secondary ranges for GKE pods (`10.4.0.0/14`) and services (`10.8.0.0/20`) added when `enable_gke = true`
+- Cloud Router + Cloud NAT for egress from private nodes
 
 ### Core Infrastructure Components
 
