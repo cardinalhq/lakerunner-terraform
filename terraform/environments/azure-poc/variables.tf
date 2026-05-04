@@ -196,12 +196,3 @@ variable "aks_enable_workload_identity" {
   default = true
 }
 
-#####################
-# Eventing (Pub/Sub analog)
-#####################
-variable "event_exclude_prefixes" {
-  description = "Blob path prefixes to exclude from notifications (e.g. [\"db/\"])"
-  type        = list(string)
-  default     = ["db/"]
-}
-

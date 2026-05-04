@@ -73,8 +73,8 @@ resource "azurerm_storage_management_policy" "cleanup" {
 }
 
 ######################################
-# Eventing: BlobCreated → Storage Queue
-# (GCS Notification → Pub/Sub analog; excludes db/ by default)
+# Eventing: BlobCreated under otel-raw/ → Storage Queue
+# (GCS Notification → Pub/Sub analog)
 ######################################
 resource "azurerm_storage_queue" "notifications" {
   name                 = "lr-${var.installation_id}-notifications"
@@ -97,20 +97,10 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "blob_created" {
 
   included_event_types = ["Microsoft.Storage.BlobCreated"]
 
-  # Limit to the "lakerunner" container
+  # Only otel-raw/ blob creates inside the lakerunner container fan out to
+  # the queue. Other prefixes (db/, etc.) do not generate notifications.
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.lakerunner.name}/blobs/"
-  }
-
-  # Exclude prefixes like db/
-  dynamic "advanced_filter" {
-    for_each = var.event_exclude_prefixes
-    content {
-      string_not_begins_with {
-        key    = "subject"
-        values = ["/blobServices/default/containers/${azurerm_storage_container.lakerunner.name}/blobs/${advanced_filter.value}"]
-      }
-    }
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.lakerunner.name}/blobs/otel-raw/"
   }
 
   storage_queue_endpoint {
