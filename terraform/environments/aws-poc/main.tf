@@ -234,14 +234,15 @@ resource "aws_sqs_queue_policy" "notifications" {
   })
 }
 
-# All ObjectCreated events go to the queue. The Lakerunner consumer filters
-# out the db/ path, matching the GCP POC's behavior.
+# Only otel-raw/ object creates fan out to SQS. Other prefixes (db/, etc.)
+# do not generate notifications.
 resource "aws_s3_bucket_notification" "lakerunner" {
   bucket = aws_s3_bucket.lakerunner.id
 
   queue {
-    queue_arn = aws_sqs_queue.notifications.arn
-    events    = ["s3:ObjectCreated:*"]
+    queue_arn     = aws_sqs_queue.notifications.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "otel-raw/"
   }
 
   depends_on = [aws_sqs_queue_policy.notifications]
