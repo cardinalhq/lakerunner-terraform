@@ -16,12 +16,6 @@ output "storage_account_name" {
   description = "Storage account name (global unique)"
 }
 
-output "storage_account_access_key" {
-  value       = azurerm_storage_account.sa.primary_access_key
-  sensitive   = true
-  description = "Use with Azure Blob SDK/CLI (no S3 API)"
-}
-
 output "event_queue_name" {
   value       = azurerm_storage_queue.notifications.name
   description = "Queue receiving BlobCreated events (db/ excluded)"
@@ -70,10 +64,3 @@ output "aks_kube_config" {
   description = "kubeconfig (null if AKS disabled)"
 }
 
-##############
-# Kafka analog
-##############
-output "kafka_bootstrap_server" {
-  value       = var.enable_kafka ? "${azurerm_eventhub_namespace.ehns[0].name}.servicebus.windows.net:9093" : null
-  description = "Kafka-compatible bootstrap (SASL_SSL)"
-}

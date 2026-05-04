@@ -1,0 +1,49 @@
+# =============================================================================
+# LAKERUNNER POC ENVIRONMENT - AWS - QUICK SETUP
+# =============================================================================
+# This creates a minimal AWS environment for evaluating Lakerunner.
+# Perfect for demos, trials, and proof-of-concept deployments.
+
+# REQUIRED: AWS region
+region = "us-east-2"
+
+# OPTIONAL: Installation ID for multiple POCs in the same account
+# 3-10 chars, must start with a letter, lowercase + digits only
+installation_id = "poc"
+
+# Environment identifier
+environment = "poc"
+
+# Tags applied to all resources
+tags = {
+  # team        = "your-team-name"
+  # cost_center = "engineering"
+}
+
+# Network Configuration
+# A dedicated VPC is created for the POC. Adjust the CIDR if needed.
+vpc_cidr = "10.0.0.0/16"
+
+# Kubernetes Options
+# EKS is on by default. Workload Identity (IRSA) is the only auth path
+# for the Lakerunner workload, so disabling this means you must bring
+# your own cluster and wire IAM-to-ServiceAccount mapping yourself.
+enable_eks              = true
+eks_kubernetes_version  = "1.31"
+eks_node_min            = 1
+eks_node_max            = 10
+eks_node_instance_types = ["t3.large"]
+eks_node_use_spot       = true
+eks_node_disk_size      = 50
+
+# PostgreSQL Configuration
+create_postgresql            = true
+postgresql_instance_class    = "db.t4g.medium"
+postgresql_allocated_storage = 20
+postgresql_engine_version    = "17"
+
+# Leave postgresql_password empty for auto-generation.
+# postgresql_password = ""
+
+# RDS is publicly accessible for POC ease. Tighten this for any real use.
+postgresql_allowed_cidr = ["0.0.0.0/0"]
