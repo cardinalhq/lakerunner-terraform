@@ -138,49 +138,6 @@ output "k8s_service_account_annotation_command" {
   value       = var.enable_gke ? "kubectl annotate serviceaccount lakerunner iam.gke.io/gcp-service-account=${google_service_account.lakerunner_k8s[0].email} -n lakerunner" : null
 }
 
-# S3 Compatibility outputs
-output "s3_access_key" {
-  description = "S3 compatible access key for the bucket"
-  value       = google_storage_hmac_key.lakerunner_s3_key.access_id
-}
-
-output "s3_secret_key" {
-  description = "S3 compatible secret key for the bucket"
-  value       = google_storage_hmac_key.lakerunner_s3_key.secret
-  sensitive   = true
-}
-
-output "s3_endpoint" {
-  description = "S3 compatible endpoint URL"
-  value       = "https://storage.googleapis.com"
-}
-
-output "s3_region" {
-  description = "S3 compatible region"
-  value       = "auto"
-}
-
-# Kafka outputs (when enabled)
-output "kafka_cluster_id" {
-  description = "Managed Kafka cluster ID (when enabled)"
-  value       = var.enable_kafka ? google_managed_kafka_cluster.lakerunner_kafka[0].cluster_id : null
-}
-
-output "kafka_cluster_name" {
-  description = "Kafka cluster name (when enabled)"
-  value       = var.enable_kafka ? google_managed_kafka_cluster.lakerunner_kafka[0].name : null
-}
-
-output "kafka_topics" {
-  description = "Created Kafka topics (when enabled)"
-  value       = var.enable_kafka ? [for topic in google_managed_kafka_topic.lakerunner_topics : topic.topic_id] : []
-}
-
-output "kafka_connection_info" {
-  description = "Kafka connection information (when enabled)"
-  value       = var.enable_kafka ? "Cluster: ${google_managed_kafka_cluster.lakerunner_kafka[0].cluster_id} (Location: ${var.region})" : "Kafka not enabled"
-}
-
 output "deployment_summary" {
   description = "POC deployment summary"
   value       = <<-EOT
@@ -188,11 +145,6 @@ output "deployment_summary" {
       Lakerunner Bucket: ${google_storage_bucket.lakerunner.name}
       Notifications Topic: ${google_pubsub_topic.object_notifications.name}
       Notifications Subscription: ${google_pubsub_subscription.lakerunner_notifications.name}
-      S3 Compatible Access:
-        Endpoint: https://storage.googleapis.com
-        Access Key: ${google_storage_hmac_key.lakerunner_s3_key.access_id}
-        Secret Key: [SENSITIVE - use 'terraform output -raw s3_secret_key' to view]
-        Region: auto
       ${var.create_postgresql ? "Database:\n      PostgreSQL Instance: ${google_sql_database_instance.lakerunner_postgresql[0].name}\n      Databases: ${var.postgresql_database_name}, ${var.postgresql_configdb_name}\n      User: ${var.postgresql_user}\n      Private IP: ${google_sql_database_instance.lakerunner_postgresql[0].private_ip_address}\n      Both lrdb and configdb ready for Lakerunner" : "Enable PostgreSQL with create_postgresql=true for database support"}
 
     Network:
@@ -204,7 +156,5 @@ output "deployment_summary" {
       Service Account: ${google_service_account.lakerunner_poc.email}
 
     ${var.enable_gke ? "Kubernetes:\n      GKE Cluster: ${google_container_cluster.lakerunner_gke[0].name}\n      Location: ${google_container_cluster.lakerunner_gke[0].location}\n      Nodes: ${var.gke_min_nodes}-${var.gke_max_nodes} ${var.gke_machine_type}\n      kubectl: gcloud container clusters get-credentials ${google_container_cluster.lakerunner_gke[0].name} --zone=${google_container_cluster.lakerunner_gke[0].location} --project=${var.project_id}" : "Enable Kubernetes with enable_gke=true for container workloads"}
-
-    ${var.enable_kafka ? "Kafka:\n      Cluster ID: ${google_managed_kafka_cluster.lakerunner_kafka[0].cluster_id}\n      Location: ${var.region}\n      Topics: lakerunner-objstore-ingest-logs, lakerunner-objstore-ingest-metrics, lakerunner-objstore-ingest-traces" : "Enable Kafka with enable_kafka=true for event streaming"}
   EOT
 }

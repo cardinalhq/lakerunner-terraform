@@ -33,23 +33,18 @@ labels = {
 # No network configuration required - everything is self-contained
 
 # Kubernetes Options
-# Enable GKE cluster for container workloads (optional)
-enable_gke = true  # Set to false if you want to bring your own Kubernetes cluster
+# Enable GKE cluster for container workloads (default true)
+# Workload Identity is the only auth path for the Lakerunner workload, so
+# disabling this means you must bring your own cluster and wire up the
+# IAM-to-ServiceAccount mapping yourself.
+enable_gke = true
 
-# GKE Configuration 
+# GKE Configuration
 gke_min_nodes    = 1
 gke_max_nodes    = 10
 gke_machine_type = "e2-standard-4"
 gke_use_spot     = true
 gke_disk_size_gb = 50
-
-# Kafka Configuration
-# Enable Managed Kafka for event streaming (optional)
-enable_kafka = false  # Set to false if you already have a Kafka provisioned 
-
-# Kafka Instance Settings 
-kafka_cpu_count  = 1
-kafka_memory_gb  = 3
 
 # PostgreSQL Configuration
 # Option 1: Create new PostgreSQL instance (default, easiest for POC)

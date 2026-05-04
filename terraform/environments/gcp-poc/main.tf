@@ -289,14 +289,6 @@ resource "google_project_service" "container_api" {
   disable_on_destroy = false
 }
 
-# Enable Managed Kafka API
-resource "google_project_service" "managed_kafka_api" {
-  count              = var.enable_kafka ? 1 : 0
-  project            = var.project_id
-  service            = "managedkafka.googleapis.com"
-  disable_on_destroy = false
-}
-
 # Create VPC peering for Cloud SQL private networking
 # NOTE: Service networking connections are PROJECT-WIDE and shared between installations
 # This means destroying one installation can affect CloudSQL in other installations
@@ -333,7 +325,7 @@ resource "google_sql_database_instance" "lakerunner_postgresql" {
   settings {
     tier    = var.postgresql_machine_type
     edition = var.postgresql_edition
-    
+
     ip_configuration {
       ipv4_enabled    = false
       private_network = google_compute_network.lakerunner_vpc.id
@@ -521,66 +513,3 @@ resource "google_service_account_iam_member" "lakerunner_workload_identity" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[lakerunner/lakerunner]"
 }
 
-# HMAC keys for S3 compatibility
-resource "google_storage_hmac_key" "lakerunner_s3_key" {
-  service_account_email = google_service_account.lakerunner_poc.email
-}
-
-# Managed Kafka Cluster
-resource "google_managed_kafka_cluster" "lakerunner_kafka" {
-  count        = var.enable_kafka ? 1 : 0
-  cluster_id   = "lr-${var.installation_id}-kafka-${random_id.bucket_suffix.hex}"
-  location     = var.region
-  project      = var.project_id
-  
-  capacity_config {
-    vcpu_count   = var.kafka_cpu_count
-    memory_bytes = var.kafka_memory_gb * 1024 * 1024 * 1024
-  }
-  
-  rebalance_config {
-    mode = "AUTO_REBALANCE_ON_SCALE_UP"
-  }
-
-  gcp_config {
-    access_config {
-      network_configs {
-        subnet = google_compute_subnetwork.lakerunner_subnet.id
-      }
-    }
-  }
-
-  labels = local.common_labels
-  
-  depends_on = [google_project_service.managed_kafka_api]
-}
-
-# Kafka Topics for Lakerunner
-resource "google_managed_kafka_topic" "lakerunner_topics" {
-  for_each = var.enable_kafka ? toset([
-    "lakerunner-objstore-ingest-logs",
-    "lakerunner-objstore-ingest-metrics", 
-    "lakerunner-objstore-ingest-traces"
-  ]) : []
-  
-  project          = var.project_id
-  topic_id         = each.value
-  cluster          = google_managed_kafka_cluster.lakerunner_kafka[0].cluster_id
-  location         = var.region
-  partition_count  = 3
-  replication_factor = 3
-  
-  # Optional: Add retention configuration
-  configs = {
-    "retention.ms" = "604800000"  # 7 days
-    "segment.ms"   = "3600000"    # 1 hour
-  }
-}
-
-# IAM permissions for Kafka
-resource "google_project_iam_member" "lakerunner_kafka_admin" {
-  count   = var.enable_kafka ? 1 : 0
-  project = var.project_id
-  role    = "roles/managedkafka.admin"
-  member  = "serviceAccount:${google_service_account.lakerunner_poc.email}"
-}

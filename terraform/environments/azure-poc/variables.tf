@@ -117,7 +117,7 @@ variable "postgresql_storage_mb" {
 #####################
 variable "enable_aks" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "aks_cluster_name" {
@@ -205,20 +205,3 @@ variable "event_exclude_prefixes" {
   default     = ["db/"]
 }
 
-#####################
-# Kafka analog
-#####################
-variable "enable_kafka" {
-  type    = bool
-  default = false
-}
-
-variable "eventhub_sku" {
-  type    = string
-  default = "Standard"
-}
-
-variable "eventhub_capacity" {
-  type    = number
-  default = 1
-}

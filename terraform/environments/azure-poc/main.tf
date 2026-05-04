@@ -366,18 +366,3 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
   tags = local.common_tags
 }
 
-######################################
-# Kafka analog → Event Hubs (Kafka-compatible)
-# NOTE: Experimental/untested with LakeRunner. This block is gated by
-# var.enable_kafka and can be disabled or removed later if not needed.
-######################################
-resource "azurerm_eventhub_namespace" "ehns" {
-  count               = var.enable_kafka ? 1 : 0
-  name                = "lr-${var.installation_id}-eh-${random_string.sa.result}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  sku                 = var.eventhub_sku
-  capacity            = var.eventhub_capacity
-  tags                = local.common_tags
-}
-// Only the Event Hubs namespace is provisioned here.

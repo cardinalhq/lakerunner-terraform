@@ -2,6 +2,8 @@
 
 This Terraform configuration creates a minimal GCP environment perfect for evaluating Lakerunner.
 
+For AWS see `../aws-poc/`. For Azure see `../azure-poc/`.
+
 ## Quick Start (5 minutes)
 
 ### Prerequisites
@@ -34,7 +36,7 @@ gcloud auth application-default login
 1. **Download Configuration**
    ```bash
    # Clone or download the terraform files to your local machine
-   cd terraform/environments/poc/
+   cd terraform/environments/gcp-poc/
    ```
 
 2. **Configure Your Deployment**
@@ -75,11 +77,8 @@ The defaults work great for POC. Just set `project_id` and `region`.
 Add these to your `terraform.tfvars` if you have existing infra:
 
 ```hcl
-# Disable Kubernetes cluster
+# Bring your own Kubernetes cluster (you must wire Workload Identity yourself)
 enable_gke = false
-
-# Disable Kafka for event streaming
-enable_kafka = false
 
 # Use existing PostgreSQL (instead of creating new)
 create_postgresql = false
@@ -94,8 +93,7 @@ postgresql_instance_name = "your-existing-db"
 - **PostgreSQL Database** - For metadata storage
 - **Pub/Sub Topics** - For event notifications
 - **Service Accounts** - With appropriate permissions
-- **GKE Cluster** - Kubernetes for container workloads
-- **Managed Kafka** - Event streaming platform
+- **GKE Cluster** - Kubernetes for container workloads (default on)
 
 
 ## After Deployment

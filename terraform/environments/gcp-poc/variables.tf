@@ -45,7 +45,7 @@ variable "labels" {
 variable "enable_gke" {
   description = "Enable GKE cluster for container workloads"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "gke_min_nodes" {
@@ -76,25 +76,6 @@ variable "gke_disk_size_gb" {
   description = "Disk size in GB for GKE nodes"
   type        = number
   default     = 50
-}
-
-# Kafka Configuration
-variable "enable_kafka" {
-  description = "Enable Managed Kafka cluster for event streaming"
-  type        = bool
-  default     = false
-}
-
-variable "kafka_cpu_count" {
-  description = "CPU count per Kafka broker"
-  type        = number
-  default     = 1
-}
-
-variable "kafka_memory_gb" {
-  description = "Memory in GB per Kafka broker"
-  type        = number
-  default     = 3
 }
 
 # PostgreSQL Configuration
