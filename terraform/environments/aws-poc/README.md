@@ -49,8 +49,8 @@ For GCP see `../gcp-poc/`. For Azure see `../azure-poc/`.
 ## What Gets Created
 
 - **VPC** with two public + two private subnets across two AZs, single NAT Gateway
-- **S3 bucket** for telemetry data, with all `s3:ObjectCreated:*` events routed to:
-- **SQS queue** consumed by Lakerunner. The consumer filters out the `db/` prefix (parity with the GCP POC).
+- **S3 bucket** for telemetry data. `s3:ObjectCreated:*` events under the `otel-raw/` prefix fan out to:
+- **SQS queue** consumed by Lakerunner. Other prefixes (e.g. `db/`) do not generate notifications.
 - **EKS cluster** with one managed node group (Spot by default, autoscaling 1-10)
 - **OIDC provider** + **IAM role** for IRSA, scoped to ServiceAccount `lakerunner/lakerunner`, with permissions on the bucket and the queue
 - **RDS Postgres** (publicly accessible for POC ease) with two databases: `lakerunner` and `config`
