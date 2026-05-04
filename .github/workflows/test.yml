@@ -17,5 +17,9 @@ jobs:
           terraform_version: "1.9.8"
           terraform_wrapper: false
 
-      - name: make test
-        run: make test
+      - name: terraform fmt -check
+        run: terraform fmt -check -recursive
+        working-directory: terraform
+
+      - name: make validate
+        run: make validate
