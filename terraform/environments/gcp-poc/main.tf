@@ -91,15 +91,15 @@ resource "google_pubsub_subscription" "lakerunner_notifications" {
   }
 }
 
-# Storage notification for all objects except db/ path
+# Only otel-raw/ object creates fan out to Pub/Sub. Other prefixes (db/, etc.)
+# do not generate notifications.
 resource "google_storage_notification" "object_create_notify" {
-  bucket         = google_storage_bucket.lakerunner.name
-  topic          = google_pubsub_topic.object_notifications.id
-  event_types    = ["OBJECT_FINALIZE"]
-  payload_format = "JSON_API_V1"
+  bucket             = google_storage_bucket.lakerunner.name
+  topic              = google_pubsub_topic.object_notifications.id
+  event_types        = ["OBJECT_FINALIZE"]
+  payload_format     = "JSON_API_V1"
+  object_name_prefix = "otel-raw/"
 
-  # This will notify on all objects - we'll filter out db/ in the subscriber
-  # GCS notifications don't support path exclusions, only inclusions
   depends_on = [
     google_pubsub_topic_iam_member.storage_publisher
   ]
