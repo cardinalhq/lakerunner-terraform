@@ -51,7 +51,7 @@ variable "create_postgresql" {
 variable "postgresql_engine_version" {
   description = "Postgres engine major version"
   type        = string
-  default     = "17"
+  default     = "18"
 }
 
 variable "postgresql_instance_class" {
@@ -109,7 +109,7 @@ variable "enable_eks" {
 variable "eks_kubernetes_version" {
   description = "EKS control plane Kubernetes version"
   type        = string
-  default     = "1.31"
+  default     = "1.35"
 }
 
 variable "eks_node_min" {

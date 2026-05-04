@@ -29,7 +29,7 @@ vpc_cidr = "10.0.0.0/16"
 # for the Lakerunner workload, so disabling this means you must bring
 # your own cluster and wire IAM-to-ServiceAccount mapping yourself.
 enable_eks              = true
-eks_kubernetes_version  = "1.31"
+eks_kubernetes_version  = "1.35"
 eks_node_min            = 1
 eks_node_max            = 10
 eks_node_instance_types = ["t3.large"]
@@ -40,7 +40,7 @@ eks_node_disk_size      = 50
 create_postgresql            = true
 postgresql_instance_class    = "db.t4g.medium"
 postgresql_allocated_storage = 20
-postgresql_engine_version    = "17"
+postgresql_engine_version    = "18"
 
 # Leave postgresql_password empty for auto-generation.
 # postgresql_password = ""
